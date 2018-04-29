@@ -7,41 +7,12 @@ import java.util.List;
  *  <V> type pour les sommet v:vertex
  *  <E> type pour les arc E:edge
  */
-public interface InterfaceGraph <V> {
+public interface InterfaceGraph  {
 	
-	 public int nombresommet (); // nombre de sommet
-	 /*
-	  * revoie un sommet pour un indice donné
-	  */
-	 public Vertex<V> getVertex(int ind);
-	/*
-	 * ajouter un arc 
-	 */
-	 public void addEdge(Edge e);
-	 /*
-	  * ajouter etiquette a un sommet 
-	  */
-	 public void addEtiquetteToVertex(V e, String label);
-	 /*
-	  * ajouter une etiquette a un arc
-	  */
-	 public void addEtiquetteToEdge(Edge e, String label);
-	 /*
-	  * retourner l'etiquette d'un sommet
-	  */
-	 public String getLabelVertex(V e);
-	 /*
-	  * retourner l'etiquete d'un arc
-	  */
-	 public String getLabelEdge (Edge e);
-	 /*
-	  * lire un graph
-	  */
-	 public void readGraph();
-	 /*
-	  * save graph
-	  */
-	 public void saveGraph();
-	 
-	
+	void creerGraphe(int s); // creer un graphe avec s sommets
+	void associerESommet(int s, String etiq); // associer etiquette a un sommet s 
+	void ajouterArc(int depart, int arrive); // ajouter arc entre sommet depart et arrive
+	void associerEArc(int d,int a,  String etiq); //associer etiquette a un arcs
+	void getEtiquettesommet ( int s); // renvoie etiquette d'un sommet
+	void getEtiquetteArc(int d, int a);
 }
