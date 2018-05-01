@@ -14,5 +14,5 @@ public interface InterfaceGraph  {
 	void ajouterArc(int depart, int arrive); // ajouter arc entre sommet depart et arrive
 	void associerEArc(int d,int a,  String etiq); //associer etiquette a un arcs
 	void getEtiquettesommet ( int s); // renvoie etiquette d'un sommet
-	void getEtiquetteArc(int d, int a);
+	void getEtiquetteArc(int d, int a); //  renvoie etiquette d'un arc
 }
