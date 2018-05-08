@@ -1,17 +1,20 @@
 package grapheorienté;
 
-import java.util.ArrayList;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
+import grapheorienté.SommetInexistantException;
+import grapheorienté.ArcInexistantException;
 
 public class Graph implements InterfaceGraph {
 	protected int nbsommet;
-	protected int tailleGraphe = 0;
-	protected int nb_arcs = 0;
 	public static int[][] graphe;
 	public static HashMap<Integer, String> sommets;
 	public static HashMap<Integer, String> arcs; // identifier par sommet depart et arrive
 	public static HashMap<String, String> etiquetteArcs; // hashmap contiens les etiquette associer a un arc
-	
+
 	/*
 	 * constructeur
 	 */
@@ -21,10 +24,6 @@ public class Graph implements InterfaceGraph {
 		arcs = new HashMap<>();
 		sommets = new HashMap<>();
 		etiquetteArcs = new HashMap<>();
-	}
-
-	public int[][] getGraphe() {
-		return graphe;
 	}
 
 	/*
@@ -62,14 +61,16 @@ public class Graph implements InterfaceGraph {
 	 * méthode qui permets d'associer à un sommet une étiquètte le hashmap sommets
 	 * contiens chaque association d'un sommet et une etiquette
 	 */
-	public void associerESommet(int s, String etiquette) {
+	public void associerESommet(int s, String etiquette) throws SommetInexistantException {
+
 		if (s >= 0 && s < graphe.length) {
 			if (etiquette != null) {
 				sommets.put(s, etiquette);
-				System.out.println("L'étiquette \"" + etiquette + "\" a été associée au sommet =>: " + s );
+				System.out.println("L'étiquette \"" + etiquette + "\" a été associée au sommet =>: " + s);
 			}
 		} else {
-			System.out.println("erreur sommet n'existe pas ");
+			throw new SommetInexistantException();
+
 		}
 	}
 
@@ -79,11 +80,12 @@ public class Graph implements InterfaceGraph {
 	 * deux sommets stokage dans l'hashmap arcs un strig qui a cette forme ex : 0 ->
 	 * 1
 	 */
-	public void ajouterArc(int depart, int arrive) {
+	public void ajouterArc(int depart, int arrive) throws SommetInexistantException {
 		System.out.println(graphe.length);
-		int indicearc = 0;
+		int indicearc = 3 * depart + arrive;
 		String arc = depart + " -> " + arrive;
-		//System.out.println("Ajout de l'arc reliant le sommet " + depart + " au sommet => " + arrive );
+		// System.out.println("Ajout de l'arc reliant le sommet " + depart + " au sommet
+		// => " + arrive );
 		if (depart < graphe.length && arrive < graphe.length) {
 			if (graphe[depart][arrive] != 1) {
 				for (int i = 0; i < graphe.length; i++) {
@@ -91,35 +93,33 @@ public class Graph implements InterfaceGraph {
 						graphe[depart][arrive] = 1;
 					}
 				}
-				System.out.println("l'arc " + arc +" a été créer");
+				System.out.println("l'arc " + arc + " a été créer");
 
 				arcs.put(indicearc, arc);
-				indicearc++;
+				// etiquetteArcs.put(arc, null);
+				// indicearc++;
 			} else {
 				System.out.println("arc existe deja !!");
 			}
 		} else {
-			System.out.println("erreur sommet n'existe pas !! ");
-		}
-		for (int i = 0; i < graphe.length; i++) {
-			for (int j = 0; j < graphe.length; j++) {
-				System.out.print(graphe[i][j] + " | ");
+			throw new SommetInexistantException();
 
-			}
-			System.out.println();
 		}
+
 	}
 
 	/*
 	 * @see grapheorienté.InterfaceGraph#associerEArc(int, int, java.lang.String)
 	 */
-	public void associerEArc(int d, int a, String etiquette) {
+	public void associerEArc(int d, int a, String etiquette) throws ArcInexistantException {
 		System.out.println(graphe.length);
 		String arc = d + " -> " + a;
 		if (arcs.containsValue(arc)) {
 			etiquetteArcs.put(arc, etiquette);
 			System.out.println("Succes => ");
-			System.out.println("Association de l'étiquette  " + etiquette + " à l'arc : "+ arc);
+			System.out.println("Association de l'étiquette  " + etiquette + " à l'arc : " + arc);
+		} else {
+			throw new ArcInexistantException();
 		}
 	}
 
@@ -127,19 +127,20 @@ public class Graph implements InterfaceGraph {
 	 * 
 	 * @see grapheorienté.InterfaceGraph#getEtiquettesommet(int)
 	 */
-	public void getEtiquettesommet(int s) {
+	public String getEtiquettesommet(int s) throws SommetInexistantException {
 		System.out.println(graphe.length);
 		String etiquette = null;
 		if (s >= 0 && s < graphe.length) {
 			if (sommets.get(s) != null) {
 				etiquette = sommets.get(s);
-				System.out.println("L'etiquette associer au sommet  : " + s + "  est  =>  " +  etiquette);
+				System.out.println("L'etiquette associer au sommet  : " + s + "  est  =>  " + etiquette);
 			} else {
 				System.out.println("pas d'etiquette associer a ce sommet ");
 			}
 		} else {
-			System.out.println("sommet " + s + " n'existe pas ");
+			throw new SommetInexistantException();
 		}
+		return etiquette;
 	}
 
 	/*
@@ -147,16 +148,72 @@ public class Graph implements InterfaceGraph {
 	 * 
 	 * @see grapheorienté.InterfaceGraph#getEtiquetteArc(int, int)
 	 */
-	public void getEtiquetteArc(int d, int a) {
-		System.out.println(graphe.length);
+	public String getEtiquetteArc(int d, int a) throws ArcInexistantException {
 		String arc = d + " -> " + a;
-	
-		if (etiquetteArcs.containsKey(arc)) {
-			String etique = etiquetteArcs.get(arc);
-			System.out.println(" l'etiquette associer a l'arc  " + arc + "  est  => " + etique);
-
+		String etiquette = " ";
+		if (arcs.containsValue(arc)) {
+			if (etiquetteArcs.containsKey(arc)) {
+				String etique = etiquetteArcs.get(arc);
+				System.out.println(" l'etiquette associer a l'arc  " + arc + "  est  => " + etique);
+				etiquette = etique;
+			} else {
+				System.out.println("l'arc  " + arc + "n'as pas d'etiquette associer ");
+			}
 		} else {
-			System.out.println("l'arc  " + arc + "n'as pas d'etiquette associer ");
+			throw new ArcInexistantException();
 		}
+		return etiquette;
+	}
+
+	public boolean sauvegarder(String nomFichier) throws IOException {
+		Boolean resultat = true;
+		String etiq_sm = " ";
+		try {
+			BufferedWriter ff = new BufferedWriter(new FileWriter(nomFichier));
+			ff.write("digraph mon_nouveau_graphe {");
+			ff.newLine();
+			for (int i = 0; i < graphe.length; i++) {
+				ff.write(i + " ");
+				try {
+					if (this.getEtiquettesommet(i) != null) {
+						etiq_sm = this.getEtiquettesommet(i);
+						ff.write("[label = \"" + etiq_sm + "\"]");
+					}
+				} catch (SommetInexistantException e) {
+					e.getMessage();
+				}
+				ff.write(";");
+				ff.newLine();
+			}
+			int clef;
+			Iterator<Integer> i = arcs.keySet().iterator();
+			while (i.hasNext()) {
+				clef = (int) i.next();
+				String valeur = arcs.get(clef);
+				System.out.println(valeur);
+				ff.write(valeur + " ");
+				String label = etiquetteArcs.get(valeur);
+				if (label != null) {
+					ff.write("[label = \"" + label + "\"]");
+				}
+
+				ff.write(";");
+				ff.newLine();
+			}
+			ff.write("} ");
+			ff.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			resultat = false;
+		}
+		return resultat;
+	}
+
+	// algo 1 densité
+	public double densité() {
+		double densité = ((double) nbsommet) / (graphe.length * graphe.length);
+		System.out.println("La densité du graphe est " + densité);
+		return densité;
 	}
 }
