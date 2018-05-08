@@ -1,5 +1,6 @@
 package grapheorienté;
 
+@SuppressWarnings("serial")
 public class SommetInexistantException extends Exception {
 	
 	public SommetInexistantException() {}

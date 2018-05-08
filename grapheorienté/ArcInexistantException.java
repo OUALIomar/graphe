@@ -1,5 +1,6 @@
 package grapheorienté;
 
+@SuppressWarnings("serial")
 public class ArcInexistantException extends Exception {
 	
 	public ArcInexistantException() {}
