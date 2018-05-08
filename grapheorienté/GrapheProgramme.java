@@ -1,24 +1,21 @@
 package grapheorienté;
 
-import java.io.BufferedReader;
-import java.io.Console;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.Scanner;
 
 public class GrapheProgramme {
-
+	// chemin du fichier ou sauvegarder le graphe
+	public final static String CHEMIN_FILE = "/home/deniro/Bureau/test.dot";
 	private static Graph graph;
+	private static Scanner clavier;
 
 	public static void main(String[] args) {
 		while (true) {
 
 			int nbrsommet;
-			int[][] graphe;
 			String req = "";
-			Scanner clavier = new Scanner(System.in);
-			Console console = System.console();
+			clavier = new Scanner(System.in);
 			System.out.println("|--------------------------------------------------------|");
 			System.out.println("|                      BIENVENUE                         |");
 			System.out.println("|--------------------------------------------------------|");
@@ -29,8 +26,8 @@ public class GrapheProgramme {
 			System.out.println("|              4- Obtenir l'etiquette d'un sommet        |");
 			System.out.println("|              5- Associer une etiquette a un arc        |");
 			System.out.println("|              6- Obtenir etiquette d'un arc             |");
-			System.out.println("|              7- Lire un graphe a partir d'un fichier   |");
-			System.out.println("|              8- sauvegarder un graphe dans un fichier  |");
+			System.out.println("|              7- sauvegarder un graphe dans un fichier  |");
+			System.out.println("|              8- densité du graphe                      |");
 			System.out.println("|--------------------------------------------------------|");
 			req = clavier.nextLine();
 			// clearTerminal();
@@ -40,11 +37,9 @@ public class GrapheProgramme {
 
 				System.out.println("Saisir un nombre de sommet");
 				nbrsommet = Integer.parseInt(clavier.nextLine());
-				// clearTerminal();
 				graph = new Graph(nbrsommet);
 				graph.creerGraphe(nbrsommet);
-				graphe = new int[nbrsommet][nbrsommet];
-				graphe = graph.getGraphe();
+				// clearTerminal();
 			}
 				;
 				break;
@@ -53,7 +48,11 @@ public class GrapheProgramme {
 				int numsommet = Integer.parseInt(clavier.nextLine());
 				System.out.println("saisir l'étiquette");
 				String etiquette = clavier.nextLine();
-				graph.associerESommet(numsommet, etiquette);
+				try {
+					graph.associerESommet(numsommet, etiquette);
+				} catch (SommetInexistantException e) {
+					System.out.println(e.getMessage());
+				}
 				System.out.println("ajout avec succes ");
 			}
 				;
@@ -63,7 +62,11 @@ public class GrapheProgramme {
 				int depart = Integer.parseInt(clavier.nextLine());
 				System.out.println(" sisir le numero du sommet d'arrivé  ");
 				int arrive = Integer.parseInt(clavier.nextLine());
-				graph.ajouterArc(depart, arrive);
+				try {
+					graph.ajouterArc(depart, arrive);
+				} catch (SommetInexistantException e) {
+					System.out.println(e.getMessage());
+				}
 				System.out.println(" ajout avec succes ");
 
 			}
@@ -73,7 +76,11 @@ public class GrapheProgramme {
 
 				System.out.println(" sisir le numero du sommet  pour avoir son etiquette ");
 				int depart = Integer.parseInt(clavier.nextLine());
-				graph.getEtiquettesommet(depart);
+				try {
+					graph.getEtiquettesommet(depart);
+				} catch (SommetInexistantException e) {
+					System.out.println(e.getMessage());
+				}
 
 			}
 				;
@@ -85,7 +92,11 @@ public class GrapheProgramme {
 				int arrive = Integer.parseInt(clavier.nextLine());
 				System.out.println("saisir l'étiquette");
 				String etiquette = clavier.nextLine();
-				graph.associerEArc(depart, arrive, etiquette);
+				try {
+					graph.associerEArc(depart, arrive, etiquette);
+				} catch (ArcInexistantException e) {
+					System.out.println(e.getMessage());
+				}
 			}
 				break;
 			case "6": {
@@ -93,27 +104,37 @@ public class GrapheProgramme {
 				int depart = Integer.parseInt(clavier.nextLine());
 				System.out.println(" sisir le numero du sommet d'arrivé  de l'arc ");
 				int arrive = Integer.parseInt(clavier.nextLine());
-				graph.getEtiquetteArc(depart, arrive);
+				try {
+					graph.getEtiquetteArc(depart, arrive);
+				} catch (ArcInexistantException e) {
+					System.out.println(e.getMessage());
+				}
 			}
 				;
 				break;
 			case "7": {
+				try {
+					graph.sauvegarder(CHEMIN_FILE);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 
 			}
 				;
 				break;
 			case "8": {
-
+				graph.densité();
 			}
 				;
 				break;
 			default:
-				break;
+				System.out.println("Invalid option");
+
 			}
 		}
 	}
 
-	// pour nettoyer la console
+	// to clear terminal 
 	public static void clearTerminal() {
 		System.out.print(" \033[H\033[2J");
 		System.out.flush();
